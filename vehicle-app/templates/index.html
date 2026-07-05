@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOLO vs ViT · Comparador de vehículos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◈</span>
+    <div>
+      <h1>YOLO <span class="vs-inline">vs</span> ViT</h1>
+      <p class="subtitle">Comparador de detección y clasificación de vehículos</p>
+    </div>
+  </div>
+
+  <div class="status-row">
+    <div class="status-pill {{ 'ok' if yolo_ready else 'fail' }}">
+      <span class="dot"></span> YOLOv8 {{ 'listo' if yolo_ready else 'no cargado' }}
+    </div>
+    <div class="status-pill {{ 'ok' if vit_ready else 'fail' }}">
+      <span class="dot"></span> ViT {{ 'listo' if vit_ready else 'no cargado' }}
+    </div>
+  </div>
+</header>
+
+{% if not yolo_ready or not vit_ready %}
+<div class="config-warning">
+  <strong>Faltan modelos por cargar.</strong>
+  {% if not yolo_ready %}<div>YOLO: {{ yolo_error }}</div>{% endif %}
+  {% if not vit_ready %}<div>ViT: {{ vit_error }}</div>{% endif %}
+  <div>Revisa el <code>README.md</code> para ver dónde colocar cada archivo dentro de <code>models/</code>.</div>
+</div>
+{% endif %}
+
+<main>
+  <section class="upload-zone" id="upload-zone">
+    <input type="file" id="file-input" accept="image/*" hidden>
+    <div class="upload-inner" id="upload-inner">
+      <span class="upload-icon">↑</span>
+      <p class="upload-title">Suelta una imagen aquí o haz clic para subirla</p>
+      <p class="upload-hint">PNG / JPG — se analizará con ambos modelos a la vez</p>
+    </div>
+    <img id="preview-img" class="preview-img" hidden>
+  </section>
+
+  <div class="actions">
+    <button id="analyze-btn" disabled>Analizar con ambos modelos</button>
+    <button id="reset-btn" class="secondary" hidden>Probar otra imagen</button>
+  </div>
+
+  <div id="loading" class="loading" hidden>
+    <div class="spinner"></div>
+    <span>Ejecutando YOLOv8 y ViT sobre la imagen...</span>
+  </div>
+
+  <div id="error-banner" class="error-banner" hidden></div>
+
+  <section id="results" class="results" hidden>
+
+    <div class="vs-divider">
+      <div class="vs-badge">VS</div>
+      <div class="vs-caption">misma imagen, dos modelos</div>
+    </div>
+
+    <div class="result-card yolo-card">
+      <div class="card-header">
+        <h2>Detección · YOLOv8</h2>
+        <span class="card-tag" id="yolo-count-tag">–</span>
+      </div>
+      <div class="card-body" id="yolo-body">
+        <img id="yolo-image" class="result-image">
+        <div class="detection-list" id="yolo-detections"></div>
+      </div>
+    </div>
+
+    <div class="result-card vit-card">
+      <div class="card-header">
+        <h2>Clasificación · ViT</h2>
+        <span class="card-tag" id="vit-top-tag">–</span>
+      </div>
+      <div class="card-body" id="vit-body">
+        <img id="vit-image" class="result-image">
+        <div class="prob-list" id="vit-probs"></div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<footer>
+  Aplicaciones de Data Science - Virtual
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
