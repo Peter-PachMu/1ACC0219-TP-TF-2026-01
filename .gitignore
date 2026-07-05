@@ -17,3 +17,5 @@ __pycache__/
 Thumbs.db
 
 models/vit_vehicle_best_model/model.safetensors
+
+models/
